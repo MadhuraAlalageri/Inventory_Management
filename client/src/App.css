@@ -1,0 +1,55 @@
+/* App.css */
+body {
+  margin: 0;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+h2 {
+  color: #333;
+}
+div {
+  margin-bottom: 10px;
+}
+
+button {
+  margin-right: 10px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+/* 🔥 PRINT ONLY CHALLAN
+
+@media print {
+
+  body * {
+    visibility: hidden !important;
+  }
+
+  #challan-print,
+  #challan-print * {
+    visibility: visible !important;
+  }
+
+  #challan-print {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background: white;
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    display: none !important;
+  }
+}
+
+/* 🔥 A4 SIZE */
+
+@page {
+  size: A4;
+  margin: 8mm;
+} 

@@ -1,0 +1,35 @@
+const Tesseract = require('tesseract.js');
+const pool = require('../config/db');
+
+exports.processInvoice = async (req, res) => {
+  try {
+    const filePath = req.file.path;
+
+    const result = await Tesseract.recognize(filePath, 'eng');
+
+    const text = result.data.text;
+
+    console.log("OCR TEXT:\n", text);
+
+    // 🔥 Simple extraction (you will improve later)
+    const tool_name = "Extracted Tool"; 
+    const category = "General";
+    const total_quantity = 1;
+
+    await pool.query(
+      `INSERT INTO tools (tool_name, category, total_quantity, available_quantity)
+       VALUES ($1, $2, $3, $3)`,
+      [tool_name, category, total_quantity]
+    );
+
+    res.json({
+      message: "Invoice processed",
+      extractedText: text
+    });
+
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("OCR failed");
+  }
+};

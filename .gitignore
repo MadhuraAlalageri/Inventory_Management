@@ -1,0 +1,30 @@
+# Dependency directories
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Build directories
+dist/
+client/dist/
+dist-ssr/
+
+# Logs
+*.log
+logs/
+server/*.log
+client/*.log
+
+# Environment variables
+.env
+.env.local
+.env.*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary query outputs
+ql -h*
+
+# Database & local test scripts (if they contain plain passwords, adjust as needed)
+# server/config/db.js # Uncomment if you want to keep db credentials local

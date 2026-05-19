@@ -1,0 +1,246 @@
+[{
+  "_id": {
+    "$oid": "67bda687127366380ea9eff7"
+  },
+  "email": "admin1@gmail.com",
+  "password": "$2b$10$nAokD07YmpQRDdoycI1VVOvPI6n6PCM5TzwYMD7UpVLuz54Si0ryS",
+  "role": "admin",
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-02-26T05:52:32.365Z"
+  },
+  "name": "Admin",
+  "requirePasswordChange": false,
+  "profileImage": "http://192.168.1.150:5002/uploads/profile-1746707085633-113875015.png",
+  "phone": "9880310042",
+  "BloodGroup": "O+",
+  "address": "CTIE,Vidya Nagar, Hubli-580031",
+  "Designation": "CTO",
+  "leavesRemaining": 35,
+  "leavesTaken": 0,
+  "totalLeaves": 35,
+  "Gender": "Male",
+  "empId": "1"
+},
+{
+  "_id": {
+    "$oid": "67d133f71b54266851357af8"
+  },
+  "name": "Employee",
+  "email": "armtronixiot@gmail.com",
+  "password": "$2b$10$DH/FuI1iwYaLKFV3os8QSOekS9ikIcZHSK3EphTjkA/zM3mw9RGYq",
+  "role": "employee",
+  "phone": "987456321",
+  "address": "CTIE, KLE Tech Park, Vidya Nagar, Hubli-580031",
+  "BloodGroup": "O+",
+  "profileImage": "http://192.168.1.150:5002/uploads/profile-1746707125849-741151839.jpeg",
+  "teams": [],
+  "requirePasswordChange": false,
+  "createdAt": {
+    "$date": "2025-03-12T07:12:55.055Z"
+  },
+  "__v": 0,
+  "Designation": "Senior Manager",
+  "leavesRemaining": 35,
+  "leavesTaken": 0,
+  "totalLeaves": 35,
+  "empId": "2"
+},
+{
+  "_id": {
+    "$oid": "67efd327207a973a65db88aa"
+  },
+  "name": "Samarth H",
+  "email": "samarth.h@armtronix.in",
+  "password": "$2b$10$UuSkGQKrDGjmpD2JnI42qunB7PZQMKKGziZ9A2HAwvNF3i414.ICu",
+  "role": "employee",
+  "phone": "9916995844",
+  "address": "10th cross Vidyagiri Bagalkot",
+  "BloodGroup": "O+",
+  "Designation": "Software Developer",
+  "profileImage": "",
+  "teams": [],
+  "requirePasswordChange": false,
+  "createdAt": {
+    "$date": "2025-04-04T12:40:07.361Z"
+  },
+  "__v": 0,
+  "Gender": "Male",
+  "empId": "14"
+},
+{
+  "_id": {
+    "$oid": "67efda22207a973a65db894c"
+  },
+  "name": "Sharad Hongal",
+  "email": "sharad.h@armtronix.in",
+  "password": "$2b$10$r.yuodT4JMsgT8JXZz8eA.IVaDB4zpjItu5UpMbW.Itbv.TY.g47a",
+  "role": "employee",
+  "phone": "",
+  "address": "",
+  "BloodGroup": "",
+  "Designation": "",
+  "profileImage": "",
+  "teams": [],
+  "requirePasswordChange": false,
+  "createdAt": {
+    "$date": "2025-04-04T13:09:54.782Z"
+  },
+  "__v": 0,
+  "Gender": "",
+  "empId": "13"
+},
+{
+  "_id": {
+    "$oid": "67efda74207a973a65db8952"
+  },
+  "name": "Manjesh Gondkar",
+  "email": "manjesh.g@armtronix.in",
+  "password": "$2b$10$u.Ek6woBUNe26nC3HgBbl.LCQ.SAV7Afk.Qv8k9vR4/rlcXmDwd82",
+  "role": "employee",
+  "phone": "8618042508",
+  "address": "Yallapur Oni Kulkarni Galli Near vasavi medicals, Hubli",
+  "BloodGroup": "O+ve",
+  "Designation": "Hardware Design Engineer",
+  "profileImage": "",
+  "teams": [],
+  "requirePasswordChange": false,
+  "createdAt": {
+    "$date": "2025-04-04T13:11:16.223Z"
+  },
+  "__v": 0,
+  "empId": "5",
+  "Gender": "Male"
+},
+{
+  "_id": {
+    "$oid": "6808d64522da7038e40f1adb"
+  },
+  "name": "Hemanth M Surakod",
+  "empId": "6",
+  "email": "hemanth.s@armtronix.in",
+  "password": "$2b$10$m6xzJh8.X92b39qz1/5yNehGcEs0bziZ.R7BU00Om6lBHdCQYqtsS",
+  "role": "employee",
+  "phone": "+919449567368",
+  "address": "",
+  "BloodGroup": "AB+",
+  "Designation": "Director",
+  "Gender": "Male",
+  "profileImage": "http://192.168.1.150:5002/uploads/profile-1747813198106-923747277.jpg",
+  "teams": [],
+  "requirePasswordChange": false,
+  "createdAt": {
+    "$date": "2025-04-23T12:00:05.310Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6808d6a822da7038e40f1aeb"
+  },
+  "name": "Naren N Nayak",
+  "empId": "7",
+  "email": "naren.nayak@armtronix.in",
+  "password": "$2b$10$fOEoKrUmXagqxnth7/jH9.v9eOZaVBt7MiEULnGNCrkM6ADYVz/NK",
+  "role": "employee",
+  "phone": "",
+  "address": "",
+  "BloodGroup": "",
+  "Designation": "",
+  "Gender": "",
+  "profileImage": "",
+  "teams": [],
+  "requirePasswordChange": false,
+  "createdAt": {
+    "$date": "2025-04-23T12:01:44.586Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "688081b15c4dc89720edceab"
+  },
+  "name": "Masood K",
+  "empId": "24",
+  "email": "masood.k@armtronix.in",
+  "password": "$2b$10$VntJH.TegVH0MCdTGRkQv.mkaExmnKp.3M7.tFDoo0QzGwHR79Eaa",
+  "role": "employee",
+  "phone": "",
+  "address": "",
+  "BloodGroup": "",
+  "Designation": "",
+  "Gender": "",
+  "profileImage": "",
+  "teams": [],
+  "requirePasswordChange": false,
+  "createdAt": {
+    "$date": "2025-07-23T06:31:13.687Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6923f78c7b36013e30676e05"
+  },
+  "name": "Kartik Mardolkar",
+  "empId": "018",
+  "email": "kartik.m@armtronix.in",
+  "password": "$2b$10$AxZeUJMnyCuXAb4vBYeQl.1eXsrFFjfaqogPB5BBhuHIJosVTg5nC",
+  "role": "employee",
+  "phone": "",
+  "address": "",
+  "BloodGroup": "",
+  "Designation": "",
+  "Gender": "",
+  "profileImage": "",
+  "teams": [],
+  "requirePasswordChange": false,
+  "createdAt": {
+    "$date": "2025-11-24T06:13:32.874Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69b53c8c27c1b0835ad85ee6"
+  },
+  "name": "Vinay HIremath",
+  "empId": "026",
+  "email": "vinay.h@armtronix.in",
+  "password": "$2b$10$UgdVKw7pVl6YNpACADMxaOGI0ZcQwvFS2716KY088mGcMYHmsScvK",
+  "role": "employee",
+  "phone": "",
+  "address": "",
+  "BloodGroup": "",
+  "Designation": "",
+  "Gender": "",
+  "profileImage": "",
+  "teams": [],
+  "requirePasswordChange": false,
+  "createdAt": {
+    "$date": "2026-03-14T10:46:36.794Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69c67a6e565393ac010fea97"
+  },
+  "name": "Sagar Patil",
+  "empId": "025",
+  "email": "sagar.p@armtronix.in",
+  "password": "$2b$10$JRrwM.dJbfgIA0Nz07oXDemGUK.5eiClRBBqP.lZZVktzNNxrxJfC",
+  "role": "employee",
+  "phone": "",
+  "address": "",
+  "BloodGroup": "",
+  "Designation": "",
+  "Gender": "",
+  "profileImage": "",
+  "teams": [],
+  "requirePasswordChange": false,
+  "createdAt": {
+    "$date": "2026-03-27T12:39:10.686Z"
+  },
+  "__v": 0
+}]
