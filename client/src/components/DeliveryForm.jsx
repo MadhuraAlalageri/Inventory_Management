@@ -1,6 +1,9 @@
+import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
 
 import { getTools } from "../services/toolService";
+import { createRequest } from "../services/requestService";
+import API from "../services/api";
 
 import DeliveryChallan from "./DeliveryChallan";
 import { INDIAN_STATES } from "../constants/states";
@@ -54,12 +57,17 @@ const DeliveryForm = () => {
     fetchTools();
     fetchDCNumber();
 
+    const interval = setInterval(() => {
+      fetchTools();
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const fetchDCNumber = async () => {
     try {
-      const res = await fetch(`http://${window.location.hostname}:5000/api/dc-number`);
-      const data = await res.json();
+      const res = await API.get("/dc-number");
+      const data = res.data;
       if (data.dcNumber) {
         setFormData((prev) => ({ ...prev, dc_number: data.dcNumber }));
       }
@@ -97,6 +105,15 @@ const DeliveryForm = () => {
 
   const handleItemChange = (index, field, value) => {
     const updatedItems = [...items];
+
+    if (field === "quantity") {
+      const tool = tools.find((t) => String(t.id) === String(updatedItems[index].tool_id));
+      if (tool && Number(value) > tool.available_quantity) {
+        toast.error(`Cannot exceed available stock of ${tool.available_quantity}`);
+        value = tool.available_quantity;
+      }
+    }
+
     updatedItems[index][field] = value;
 
     // 🔥 AUTO-MULTIPLY PRICE
@@ -151,7 +168,7 @@ const DeliveryForm = () => {
       !formData.client_name
     ) {
 
-      alert(
+      toast.error(
         "Please enter client name"
       );
 
@@ -162,7 +179,7 @@ const DeliveryForm = () => {
       !formData.address
     ) {
 
-      alert(
+      toast.error(
         "Please enter address"
       );
 
@@ -178,7 +195,7 @@ const DeliveryForm = () => {
 
     if (invalidItem) {
 
-      alert(
+      toast.error(
         "Please select tool and quantity"
       );
 

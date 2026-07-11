@@ -10,7 +10,7 @@ export const createRequest = async (data) => {
 
 // ✅ GET REQUESTS
 export const getRequests = async () => {
-  const res = await API.get("/requests");
+  const res = await API.get(`/requests?t=${new Date().getTime()}`);
   return res.data;
 };
 

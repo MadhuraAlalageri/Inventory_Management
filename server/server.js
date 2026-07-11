@@ -1,6 +1,7 @@
+require('dotenv').config();
 const app = require('./app');
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5003;
 
 console.log("APP FILE PATH:", __filename);
 

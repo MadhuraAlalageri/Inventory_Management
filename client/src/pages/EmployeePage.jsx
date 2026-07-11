@@ -1,6 +1,8 @@
+import toast from "react-hot-toast";
 import { useEffect, useState, useRef } from "react";
 
 import { getTools } from "../services/toolService";
+import API from "../services/api";
 
 import DeliveryChallan from "../components/DeliveryChallan";
 import { INDIAN_STATES } from "../constants/states";
@@ -21,6 +23,8 @@ const EmployeePage = ({ user }) => {
   const [tools, setTools] = useState([]);
 
   const [requests, setRequests] = useState([]);
+
+  const [returnRequests, setReturnRequests] = useState([]);
 
   const [items, setItems] = useState([]);
 
@@ -98,6 +102,27 @@ const EmployeePage = ({ user }) => {
   const itemsPerPage = 10;
 
   const [successNotification, setSuccessNotification] = useState("");
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({ oldPassword: "", newPassword: "" });
+  const [passwordMsg, setPasswordMsg] = useState({ type: "", text: "" });
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    setPasswordMsg({ type: "", text: "" });
+    try {
+      const res = await API.post("/auth/change-password", { userId: user.id, ...passwordForm });
+      const data = res.data;
+      if (res.status === 200) {
+        setSuccessNotification("Password changed successfully!");
+        setShowPasswordModal(false);
+        setPasswordForm({ oldPassword: "", newPassword: "" });
+      } else {
+        setPasswordMsg({ type: "error", text: data.message || data.error || "Failed to change password" });
+      }
+    } catch (err) {
+      setPasswordMsg({ type: "error", text: "Network error" });
+    }
+  };
 
   useEffect(() => {
     if (successNotification) {
@@ -209,7 +234,7 @@ const EmployeePage = ({ user }) => {
     if (!returnSearchDC.trim()) return;
 
     if (returnSearchDC.trim().toUpperCase().startsWith("IN/")) {
-      alert("Indents cannot be returned. Please enter a valid Delivery Challan Number.");
+      toast.error("Indents cannot be returned. Please enter a valid Delivery Challan Number.");
       setReturnItems([]);
       return;
     }
@@ -244,7 +269,7 @@ const EmployeePage = ({ user }) => {
       );
 
       if (matched.length > 0 && matched[0].returnable === false) {
-        alert("This is a Non-Returnable Material Indent. Items cannot be returned.");
+        toast.error("This is a Non-Returnable Material Indent. Items cannot be returned.");
         setReturnItems([]);
         return;
       }
@@ -252,9 +277,9 @@ const EmployeePage = ({ user }) => {
       if (matched.length === 0) {
         const anyExists = requests.some(r => r.dc_number?.toLowerCase() === returnSearchDC.toLowerCase());
         if (anyExists) {
-          alert("This challan number is not yet approved by the manager.");
+          toast.error("This challan number is not yet approved by the manager.");
         } else {
-          alert("No challan found with this DC Number");
+          toast.error("No challan found with this DC Number");
         }
         setReturnItems([]);
         return;
@@ -264,7 +289,7 @@ const EmployeePage = ({ user }) => {
       const nonRestockedMatched = matched.filter(r => !alreadyReturnedIds.has(r.id));
 
       if (nonRestockedMatched.length === 0) {
-        alert("All items in this challan have already been restocked!");
+        toast.error("All items in this challan have already been restocked!");
         setReturnItems([]);
         return;
       }
@@ -282,7 +307,7 @@ const EmployeePage = ({ user }) => {
 
     } catch (err) {
       console.error("Error searching for return challan:", err);
-      alert("Error searching for return challan");
+      toast.error("Error searching for return challan");
     }
   };
 
@@ -291,7 +316,7 @@ const EmployeePage = ({ user }) => {
 
     const tickedItems = returnItems.filter(item => item.returned);
     if (tickedItems.length === 0) {
-      alert("Please tick at least one item that is being returned.");
+      toast.error("Please tick at least one item that is being returned.");
       return;
     }
 
@@ -309,7 +334,7 @@ const EmployeePage = ({ user }) => {
       setReturnItems([]);
     } catch (err) {
       console.error(err);
-      alert("Error submitting return report");
+      toast.error("Error submitting return report");
     } finally {
       setIsSubmittingReturn(false);
     }
@@ -320,14 +345,33 @@ const EmployeePage = ({ user }) => {
   useEffect(() => {
     fetchTools();
     fetchRequests();
+    fetchReturnRequests();
     fetchDCNumber();
+
+    const interval = setInterval(() => {
+      fetchTools();
+      fetchRequests();
+      fetchReturnRequests();
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, []);
+
+  // 🔥 FETCH RETURN REQUESTS
+  async function fetchReturnRequests() {
+    try {
+      const data = await getReturnRequests();
+      setReturnRequests(data);
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
   async function fetchDCNumber(targetView = view) {
     try {
       const endpoint = targetView === "indent" ? "in-number" : "dc-number";
-      const res = await fetch(`http://${window.location.hostname}:5000/api/${endpoint}`);
-      const data = await res.json();
+      const res = await API.get(`/${endpoint}`);
+      const data = res.data;
       if (data.dcNumber) {
         setDcNumber(data.dcNumber);
       } else if (data.inNumber) {
@@ -367,6 +411,15 @@ const EmployeePage = ({ user }) => {
   ) => {
 
     const updatedItems = [...items];
+
+    if (field === "quantity") {
+      const tool = tools.find((t) => t.id === Number(updatedItems[index].tool_id));
+      if (tool && Number(value) > tool.available_quantity) {
+        toast.error(`Cannot exceed available stock of ${tool.available_quantity}`);
+        value = tool.available_quantity;
+      }
+    }
+
     updatedItems[index][field] = value;
 
     // 🔥 AUTO-MULTIPLY PRICE
@@ -396,7 +449,7 @@ const EmployeePage = ({ user }) => {
   const handleGenerateInvoice = async (req) => {
     // 🔥 APPROVAL CHECK
     if (req.status !== "approved") {
-      alert("Manager approval pending");
+      toast.error("Manager approval pending");
       return;
     }
 
@@ -502,7 +555,7 @@ const EmployeePage = ({ user }) => {
     // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    alert(`Challan ${group.dc_number} data loaded into the form. You can now make changes and submit again.`);
+    toast.error(`Challan ${group.dc_number} data loaded into the form. You can now make changes and submit again.`);
   };
 
 
@@ -513,7 +566,7 @@ const EmployeePage = ({ user }) => {
     // 🔥 VALIDATION
     if (!dcNumber.trim()) {
 
-      alert(
+      toast.error(
         "Please enter Delivery Challan Number"
       );
 
@@ -522,29 +575,29 @@ const EmployeePage = ({ user }) => {
 
     if (view !== "indent") {
       if (!clientName.trim()) {
-        alert("Please enter client name");
+        toast.error("Please enter client name");
         return;
       }
 
       if (!clientAddress.trim()) {
-        alert("Please enter client address");
+        toast.error("Please enter client address");
         return;
       }
 
       if (!attentionPerson.trim()) {
-        alert("Please enter attention person");
+        toast.error("Please enter attention person");
         return;
       }
 
       if (!phone.trim()) {
-        alert("Please enter phone number");
+        toast.error("Please enter phone number");
         return;
       }
     }
 
     if (items.length === 0) {
 
-      alert(
+      toast.error(
         "Please add tools"
       );
 
@@ -556,7 +609,7 @@ const EmployeePage = ({ user }) => {
 
       if (!item.tool_id) {
 
-        alert(
+        toast.error(
           "Please select all tools"
         );
 
@@ -567,7 +620,7 @@ const EmployeePage = ({ user }) => {
         Number(item.quantity) <= 0
       ) {
 
-        alert(
+        toast.error(
           "Quantity must be greater than 0"
         );
 
@@ -583,7 +636,7 @@ const EmployeePage = ({ user }) => {
 
       if (!selectedTool) {
 
-        alert(
+        toast.error(
           "Tool not found"
         );
 
@@ -595,7 +648,7 @@ const EmployeePage = ({ user }) => {
         selectedTool.available_quantity
       ) {
 
-        alert(
+        toast.error(
           `${selectedTool.tool_name} exceeds available stock`
         );
 
@@ -608,8 +661,8 @@ const EmployeePage = ({ user }) => {
       let finalNumber = dcNumber;
       try {
         const endpoint = view === "indent" ? "in-number" : "dc-number";
-        const res = await fetch(`http://${window.location.hostname}:5000/api/${endpoint}`, { method: "POST" });
-        const data = await res.json();
+        const res = await API.post(`/${endpoint}`);
+        const data = res.data;
         if (data.dcNumber) {
           finalNumber = data.dcNumber;
         } else if (data.inNumber) {
@@ -674,7 +727,7 @@ const EmployeePage = ({ user }) => {
 
       console.error(err);
 
-      alert(
+      toast.error(
         err.response?.data ||
         "Request failed"
       );
@@ -708,6 +761,15 @@ const EmployeePage = ({ user }) => {
           >
             🔄 Return Center
           </button>
+          
+          <button
+            onClick={() => setShowPasswordModal(true)}
+            className="btn-secondary"
+            style={{ padding: "10px 20px", border: "none" }}
+          >
+            🔑 Change Password
+          </button>
+
           <span style={{
             background: "rgba(255,255,255,0.05)",
             padding: "8px 16px",
@@ -761,6 +823,31 @@ const EmployeePage = ({ user }) => {
           >
             ✕
           </button>
+        </div>
+      )}
+
+      {showPasswordModal && (
+        <div style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", background: "rgba(0,0,0,0.6)", zIndex: 10000, display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <div className="glass-panel" style={{ width: "400px", padding: "24px" }}>
+            <h3 style={{ marginTop: 0 }}>Change Password</h3>
+            {passwordMsg.text && (
+              <div style={{ color: "var(--danger)", marginBottom: "16px" }}>{passwordMsg.text}</div>
+            )}
+            <form onSubmit={handleChangePassword} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+              <div>
+                <label style={{ display: "block", marginBottom: "8px" }}>Old Password</label>
+                <input type="password" required value={passwordForm.oldPassword} onChange={e => setPasswordForm({...passwordForm, oldPassword: e.target.value})} style={{ width: "100%", marginBottom: 0 }} />
+              </div>
+              <div>
+                <label style={{ display: "block", marginBottom: "8px" }}>New Password</label>
+                <input type="password" required value={passwordForm.newPassword} onChange={e => setPasswordForm({...passwordForm, newPassword: e.target.value})} style={{ width: "100%", marginBottom: 0 }} />
+              </div>
+              <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end", margin: 0 }}>
+                <button type="button" onClick={() => setShowPasswordModal(false)} className="btn-secondary">Cancel</button>
+                <button type="submit" className="btn-primary">Save</button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 
@@ -889,12 +976,12 @@ const EmployeePage = ({ user }) => {
                 <button
                   onClick={() => {
                     if (!selectedDropdownTool) {
-                      alert("Please select a tool");
+                      toast.error("Please select a tool");
                       return;
                     }
                     const alreadyExists = items.find((item) => item.tool_id === selectedDropdownTool.id);
                     if (alreadyExists) {
-                      alert("Tool already added");
+                      toast.error("Tool already added");
                       return;
                     }
                     const unitPrice = Number(priceInput) || 0;
@@ -1326,10 +1413,10 @@ const EmployeePage = ({ user }) => {
                                         for (const item of group.items) {
                                           await handleDeleteRequest(item.id);
                                         }
-                                        alert("Challan cancelled successfully");
+                                        toast.error("Challan cancelled successfully");
                                         setTimeout(() => { fetchRequests(); }, 300);
                                       } catch (err) {
-                                        alert(`Error cancelling requests: ${err.message}`);
+                                        toast.error(`Error cancelling requests: ${err.message}`);
                                       }
                                     }
                                   }}
@@ -1404,72 +1491,123 @@ const EmployeePage = ({ user }) => {
 
 
       {view === "returns" && (
-        <div className="glass-panel" style={{ marginTop: "32px" }}>
-          <h3>Process Return (Inward)</h3>
-          <p style={{ fontSize: "14px", color: "var(--text-secondary)", marginBottom: "20px" }}>
-            Enter the DC Number and tick the items that have been returned.
-          </p>
+        <>
+          <div className="glass-panel" style={{ marginTop: "32px" }}>
+            <h3>Process Return (Inward)</h3>
+            <p style={{ fontSize: "14px", color: "var(--text-secondary)", marginBottom: "20px" }}>
+              Enter the DC Number and tick the items that have been returned.
+            </p>
 
-          <div style={{ display: "flex", gap: "12px", marginBottom: "24px" }}>
-            <input
-              type="text"
-              placeholder="Enter DC Number (e.g. DC/2026-27/001)"
-              value={returnSearchDC}
-              onChange={(e) => setReturnSearchDC(e.target.value)}
-              style={{ flex: 1, marginBottom: 0 }}
-            />
-            <button onClick={handleSearchReturnDC} className="btn-primary" style={{ padding: "12px 24px" }}>
-              Find Challan
-            </button>
+            <div style={{ display: "flex", gap: "12px", marginBottom: "24px" }}>
+              <input
+                type="text"
+                placeholder="Enter DC Number (e.g. DC/2026-27/001)"
+                value={returnSearchDC}
+                onChange={(e) => setReturnSearchDC(e.target.value)}
+                style={{ flex: 1, marginBottom: 0 }}
+              />
+              <button onClick={handleSearchReturnDC} className="btn-primary" style={{ padding: "12px 24px" }}>
+                Find Challan
+              </button>
+            </div>
+
+            {returnItems.length > 0 && (
+              <div className="modern-table-container">
+                <table style={{ marginBottom: "24px" }}>
+                  <thead>
+                    <tr>
+                      <th style={{ width: "50px" }}>Tick</th>
+                      <th>Item Name</th>
+                      <th>Sent Qty</th>
+                      <th>Original DC</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {returnItems.map((item, idx) => (
+                      <tr key={idx}>
+                        <td>
+                          <input
+                            type="checkbox"
+                            checked={item.returned}
+                            onChange={(e) => {
+                              const updated = [...returnItems];
+                              updated[idx].returned = e.target.checked;
+                              setReturnItems(updated);
+                            }}
+                            style={{ width: "20px", height: "20px", cursor: "pointer" }}
+                          />
+                        </td>
+                        <td>{item.tool_name}</td>
+                        <td>{item.quantity}</td>
+                        <td>{item.dc_number}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                  <button
+                    onClick={handleSubmitReturn}
+                    disabled={isSubmittingReturn}
+                    className="btn-primary"
+                    style={{ background: "var(--success)", padding: "12px 32px" }}
+                  >
+                    {isSubmittingReturn ? "Submitting..." : "Submit Return Report"}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
-          {returnItems.length > 0 && (
+          <div className="glass-panel" style={{ marginTop: "32px" }}>
+            <h3>My Return History</h3>
             <div className="modern-table-container">
-              <table style={{ marginBottom: "24px" }}>
+              <table>
                 <thead>
                   <tr>
-                    <th style={{ width: "50px" }}>Tick</th>
-                    <th>Item Name</th>
-                    <th>Sent Qty</th>
-                    <th>Original DC</th>
+                    <th>DC Number</th>
+                    <th>Date</th>
+                    <th>Items Returned</th>
+                    <th>Status</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {returnItems.map((item, idx) => (
-                    <tr key={idx}>
-                      <td>
-                        <input
-                          type="checkbox"
-                          checked={item.returned}
-                          onChange={(e) => {
-                            const updated = [...returnItems];
-                            updated[idx].returned = e.target.checked;
-                            setReturnItems(updated);
-                          }}
-                          style={{ width: "20px", height: "20px", cursor: "pointer" }}
-                        />
-                      </td>
-                      <td>{item.tool_name}</td>
-                      <td>{item.quantity}</td>
-                      <td>{item.dc_number}</td>
-                    </tr>
-                  ))}
+                  {returnRequests.filter(req => req.user_id === user.id).length === 0 ? (
+                    <tr><td colSpan="4" style={{ textAlign: "center", padding: "20px" }}>No return requests found</td></tr>
+                  ) : (
+                    returnRequests
+                      .filter(req => req.user_id === user.id)
+                      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+                      .map((req) => {
+                        const items = typeof req.items === 'string' ? JSON.parse(req.items) : req.items;
+                        const tickedItems = items.filter(i => i.returned);
+                        return (
+                          <tr key={req.id}>
+                            <td><b style={{ color: "var(--accent-primary)" }}>{req.dc_number}</b></td>
+                            <td>{new Date(req.created_at).toLocaleString()}</td>
+                            <td>
+                              <div style={{ fontSize: "12px", display: "flex", flexDirection: "column", gap: "4px" }}>
+                                {tickedItems.map((item, i) => (
+                                  <div key={i} style={{ background: "rgba(255,255,255,0.05)", padding: "4px 8px", borderRadius: "4px" }}>
+                                    {item.tool_name} <span style={{ color: "var(--text-secondary)", marginLeft: "4px" }}>x {item.quantity}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </td>
+                            <td>
+                              <span className={`badge badge-${req.status}`} style={{ minWidth: "80px", textAlign: "center", display: "inline-block" }}>
+                                {req.status}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })
+                  )}
                 </tbody>
               </table>
-
-              <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                <button
-                  onClick={handleSubmitReturn}
-                  disabled={isSubmittingReturn}
-                  className="btn-primary"
-                  style={{ background: "var(--success)", padding: "12px 32px" }}
-                >
-                  {isSubmittingReturn ? "Submitting..." : "Submit Return Report"}
-                </button>
-              </div>
             </div>
-          )}
-        </div>
+          </div>
+        </>
       )}
     </div>
   );

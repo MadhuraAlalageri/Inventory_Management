@@ -1,107 +1,56 @@
 # Tool Inventory Management System
 
-A modern, full-stack Tool Inventory Management web application designed to streamline company tool allocations, employee requests, returns, and automatic stock inward processes via OCR invoice parsing. It features dedicated portals for **Managers** and **Employees**, complete with live stock tracking and printable Delivery Challans (DC).
+A full-stack web application designed to track tools, manage stock, and streamline the process of issuing tools to employees via Delivery Challans and Material Indents. 
 
----
+## 🚀 Tech Stack
+- **Frontend:** React (Vite)
+- **Backend:** Node.js, Express.js
+- **Database:** PostgreSQL (Dockerized)
+- **Other Services:** Nodemailer (Ethereal testing), Tesseract.js (OCR)
 
-## 🚀 Key Features
+## ✨ Key Features
+- **Role-Based Access Control (RBAC):** Separate dashboards and permissions for Managers (Admins) and standard Employees.
+- **Inventory Tracking:** Real-time tracking of available and checked-out tools. Includes low-stock and out-of-stock alerts.
+- **Request Workflows:** 
+  - Employees can request tools by generating a **Delivery Challan** (external) or **Material Indent** (internal).
+  - Managers can approve, reject, and export requests to Excel.
+1- **Employee Management:** Managers can create new user accounts directly from the dashboard. The system automatically provisions a temporary password and generates a welcome email preview (via Ethereal). Employees can change their password securely on first login.
+- **Automated Document Generation:** Instantly generate printable Delivery Challan invoices and Indents right from the browser.
+- **Invoice OCR (Experimental):** Backend support for reading new stock invoices via Tesseract.js.
 
-### 👤 Role-Based Portals & Authentication
-* **Manager Dashboard:** 
-  * Full dashboard to monitor pending, approved, and rejected requests.
-  * Real-time stock management (add, edit, delete, and track total vs. available quantities).
-  * OCR-powered stock inward tool to parse and ingest details directly from PDF/Image invoices.
-  * Approve tool returns and manage employee allocations.
-* **Employee Portal:**
-  * Request multiple tools simultaneously with live stock verification.
-  * Real-time unit price check to see the cost of tools before submitting.
-  * Easy-to-use return submission interface to log return requests for tools in their possession.
+## 🛠️ Project Structure
+- `/client` - React frontend application.
+- `/server` - Node.js Express backend and API routes.
 
-### 📄 Delivery Challan (DC) System
-* **Sequential DC Generator:** Generates unique, financial-year adjusted delivery challan numbers (e.g., `DC/2026-27/001`).
-* **Printable Invoices:** Elegant, print-friendly Delivery Challan sheets ready for physical signatures and filing.
+## 💻 Getting Started
 
----
+### 1. Database (PostgreSQL)
+The application relies on a Dockerized PostgreSQL container (`inventory_postgres`) running on port `5432`.
+```bash
+# Start the database container
+docker start inventory_postgres
+```
+*(Note: The container is configured to restart automatically unless explicitly stopped).*
 
-## 🛠️ Technology Stack
-
-* **Frontend:** React.js, Vite, Vanilla CSS (Modern aesthetic, responsive grids)
-* **Backend:** Node.js, Express.js
-* **Database:** PostgreSQL (with `pg` connection pooling)
-* **OCR Service:** Integrated OCR parsing for automated stock inward processing (Tesseract/custom parser helper)
-
----
-
-## 📦 Project Structure
-
-```text
-├── client/                 # React Frontend (Vite)
-│   ├── src/                # Component logic, views, context
-│   └── package.json        # Frontend dependencies
-├── server/                 # Node.js/Express Backend
-│   ├── config/             # Database connection configurations
-│   ├── controllers/        # Request handling and business logic
-│   ├── routes/             # REST API endpoints
-│   └── package.json        # Backend dependencies
-├── schema.sql              # Database schema (tables structure)
-└── .gitignore              # Files ignored by git
+### 2. Backend Server
+The backend API runs on port `5003`.
+```bash
+cd server
+npm install
+node server.js
 ```
 
----
+### 3. Frontend Client
+The frontend runs using Vite, typically on port `5173`.
+```bash
+cd client
+npm install
+npm run dev
+```
 
-## ⚙️ Installation & Setup
+## 🔐 Default Test Credentials
+- **Admin / Manager:** `admin1@gmail.com` | `123456`
+- **Standard Employee:** `armtronixiot@gmail.com` | `123456`
 
-### 1. Prerequisites
-Ensure you have the following installed on your machine:
-* [Node.js](https://nodejs.org/) (v16+ recommended)
-* [PostgreSQL](https://www.postgresql.org/) database server
-
-### 2. Database Initialization
-1. Create a database called `inventory_db` in PostgreSQL.
-2. Run the `schema.sql` script to set up all tables, relations, and initial states:
-   ```bash
-   PGPASSWORD=your_db_password psql -h localhost -U postgres -d inventory_db -f schema.sql
-   ```
-3. Seed the database with users and tool inventory:
-   ```bash
-   # From the project root:
-   node server/seedUsers.js
-   node server/importTools.js
-   ```
-
-### 3. Backend Setup
-1. Navigate to the server folder:
-   ```bash
-   cd server
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Configure your database connection in `server/config/db.js` (or set up a `.env` file).
-4. Start the server:
-   ```bash
-   npm start
-   ```
-   *The server runs by default on `http://localhost:5000`.*
-
-### 4. Frontend Setup
-1. Navigate to the client folder:
-   ```bash
-   cd ../client
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Start the Vite development server:
-   ```bash
-   npm run dev
-   ```
-   *The client runs by default on `http://localhost:5173`.*
-
----
-
-## 🔒 Security Recommendations
-* Use environment variables (`.env`) to store database passwords and session secrets.
-* Make sure `node_modules`, log files, and `.env` remain in the `.gitignore` so they are not committed to GitHub.
+## 📧 Email Testing
+Automated emails (like New User creation) are handled via [Ethereal Email](https://ethereal.email). Instead of spamming real inboxes, the Node.js backend prints a unique "Preview URL" to the server terminal. Click the link in the terminal to view the rendered email.

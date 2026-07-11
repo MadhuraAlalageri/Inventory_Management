@@ -2,7 +2,7 @@ import API from "./api";
 
 // 🔹 GET
 export const getTools = async () => {
-  const res = await API.get("/tools");
+  const res = await API.get(`/tools?t=${new Date().getTime()}`);
   return res.data;
 };
 

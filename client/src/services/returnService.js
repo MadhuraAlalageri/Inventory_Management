@@ -6,7 +6,7 @@ export const createReturnRequest = async (payload) => {
 };
 
 export const getReturnRequests = async () => {
-  const res = await API.get("/returns");
+  const res = await API.get(`/returns?t=${new Date().getTime()}`);
   return res.data;
 };
 

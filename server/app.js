@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const pool = require('./config/db');
+const { protect } = require('./middleware/authMiddleware');
 
 const app = express();
 app.use(cors());
@@ -159,7 +160,7 @@ app.get('/check', (req, res) => {
 });
 
 // ✅ GET DYNAMIC DC NUMBER (PREVIEW)
-app.get('/api/dc-number', async (req, res) => {
+app.get('/api/dc-number', protect, async (req, res) => {
   try {
     const result = await pool.query('SELECT last_number + 1 AS next_number FROM dc_sequence');
     const nextNumber = result.rows[0].next_number;
@@ -188,7 +189,7 @@ app.get('/api/dc-number', async (req, res) => {
 });
 
 // ✅ GENERATE DYNAMIC DC NUMBER (ON SUBMIT)
-app.post('/api/dc-number', async (req, res) => {
+app.post('/api/dc-number', protect, async (req, res) => {
   try {
     const result = await pool.query('UPDATE dc_sequence SET last_number = last_number + 1 RETURNING last_number');
     const nextNumber = result.rows[0].last_number;
@@ -217,7 +218,7 @@ app.post('/api/dc-number', async (req, res) => {
 });
 
 // ✅ GET DYNAMIC IN NUMBER (PREVIEW)
-app.get('/api/in-number', async (req, res) => {
+app.get('/api/in-number', protect, async (req, res) => {
   try {
     const result = await pool.query('SELECT last_number + 1 AS next_number FROM in_sequence');
     const nextNumber = result.rows[0].next_number;
@@ -246,7 +247,7 @@ app.get('/api/in-number', async (req, res) => {
 });
 
 // ✅ GENERATE DYNAMIC IN NUMBER (ON SUBMIT)
-app.post('/api/in-number', async (req, res) => {
+app.post('/api/in-number', protect, async (req, res) => {
   try {
     const result = await pool.query('UPDATE in_sequence SET last_number = last_number + 1 RETURNING last_number');
     const nextNumber = result.rows[0].last_number;

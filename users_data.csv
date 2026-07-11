@@ -1,0 +1,15 @@
+id,name,role,email,password,phone,designation
+4,"Sharad Hongal","employee","sharad.h@armtronix.in","$2b$10$r.yuodT4JMsgT8JXZz8eA.IVaDB4zpjItu5UpMbW.Itbv.TY.g47a",null,null
+5,"Manjesh Gondkar","employee","manjesh.g@armtronix.in","$2b$10$u.Ek6woBUNe26nC3HgBbl.LCQ.SAV7Afk.Qv8k9vR4/rlcXmDwd82",null,null
+6,"Hemanth M Surakod","employee","hemanth.s@armtronix.in","$2b$10$m6xzJh8.X92b39qz1/5yNehGcEs0bziZ.R7BU00Om6lBHdCQYqtsS",null,null
+7,"Naren N Nayak","employee","naren.nayak@armtronix.in","$2b$10$fOEoKrUmXagqxnth7/jH9.v9eOZaVBt7MiEULnGNCrkM6ADYVz/NK",null,null
+8,"Masood K","employee","masood.k@armtronix.in","$2b$10$VntJH.TegVH0MCdTGRkQv.mkaExmnKp.3M7.tFDoo0QzGwHR79Eaa",null,null
+9,"Kartik Mardolkar","employee","kartik.m@armtronix.in","$2b$10$AxZeUJMnyCuXAb4vBYeQl.1eXsrFFjfaqogPB5BBhuHIJosVTg5nC",null,null
+10,"Vinay HIremath","employee","vinay.h@armtronix.in","$2b$10$UgdVKw7pVl6YNpACADMxaOGI0ZcQwvFS2716KY088mGcMYHmsScvK",null,null
+11,"Sagar Patil","employee","sagar.p@armtronix.in","$2b$10$JRrwM.dJbfgIA0Nz07oXDemGUK.5eiClRBBqP.lZZVktzNNxrxJfC",null,null
+2,"Employee","employee","armtronixiot@gmail.com","$2b$10$wT0uJlSAIwW/Sap457XsiOr5NXKppvjMwdBvg14WK30kMo9Ujjnw2",null,null
+13,"madhura","employee","madhuralalageri145@gmail.com","$2b$10$tU7IF8LJO1AErPHKRmaGGumzzCwBI.YmjyIVoP8IG2j4gpSegoJ5G","9916190159","se"
+14,"Madhura","employee","01fe24mca023@kletech.ac.in","$2b$10$34vm4f9TOh1YKjjJ6GV5QeZYGrxozEez/9seOrMc6e1VVTU8k9jsC","9916190159","software engineer"
+12,"Madhura Alalageri","employee","madhuraalalageri42@gmail.com","$2b$10$QQL/untmALtjuMcVBJVswOgyQ0mljtsuR4.x.MuGkVShvseJ36Uy2","9916190159","Software Engineer"
+1,"Admin","manager","admin1@gmail.com","$2b$10$Z2FLt2NsvfbUAt3oU6MS/OlpPHTBSLwe43vG4wProAWpG1MX3t0eq",null,null
+3,"Samarth H","employee","samarth.h@armtronix.in","$2b$10$zCPOjVOieM855Bf0oxTbruuFahyE0WnTtjt/XUpu.unXXFlei1c16",null,null

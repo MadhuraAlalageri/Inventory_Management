@@ -1,3 +1,4 @@
+import toast from "react-hot-toast";
 import { useEffect, useState, useRef } from "react";
 import * as XLSX from "xlsx";
 
@@ -99,10 +100,21 @@ const ManagerPage = () => {
 
   const itemsPerPage = 10;
 
+  const [userForm, setUserForm] = useState({ name: "", email: "", password: "", role: "employee", phone: "", designation: "" });
+  const [userMsg, setUserMsg] = useState({ type: "", text: "" });
+
   useEffect(() => {
     fetchTools();
     fetchRequests();
     fetchReturnRequests();
+
+    const interval = setInterval(() => {
+      fetchTools();
+      fetchRequests();
+      fetchReturnRequests();
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, []);
 
   // Sync new tools with OCR candidate list automatically
@@ -159,7 +171,7 @@ const ManagerPage = () => {
       fetchReturnRequests();
       fetchTools();
     } catch (err) {
-      alert(err.response?.data || "Error approving return");
+      toast.error(err.response?.data || "Error approving return");
     }
   };
 
@@ -170,7 +182,7 @@ const ManagerPage = () => {
       setSuccessNotification("Return report rejected successfully!");
       fetchReturnRequests();
     } catch (err) {
-      alert("Error rejecting return");
+      toast.error("Error rejecting return");
     }
   };
 
@@ -194,7 +206,7 @@ const ManagerPage = () => {
       });
       setOcrResults(enriched);
     } catch (err) {
-      alert("Failed to process OCR");
+      toast.error("Failed to process OCR");
     } finally {
       setIsOcrLoading(false);
     }
@@ -210,7 +222,7 @@ const ManagerPage = () => {
       .filter(up => up.quantity > 0 && !isNaN(up.id));
 
     if (updates.length === 0) {
-      alert("No valid tools matched with positive quantity. Please match items before submitting.");
+      toast.error("No valid tools matched with positive quantity. Please match items before submitting.");
       return;
     }
 
@@ -225,7 +237,7 @@ const ManagerPage = () => {
       setPendingRemaining(remaining);
       setSuccessAlertMessage("items restocked successfully");
     } catch (err) {
-      alert("Error updating batch stock: " + (err.response?.data || err.message));
+      toast.error("Error updating batch stock: " + (err.response?.data || err.message));
     }
   };
 
@@ -244,29 +256,29 @@ const ManagerPage = () => {
     );
 
     if (duplicate) {
-      alert("Tool already exists");
+      toast.error("Tool already exists");
       return;
     }
 
     if (!form.tool_name.trim()) {
-      alert("Tool name is required");
+      toast.error("Tool name is required");
       return;
     }
 
     if (!form.category.trim()) {
-      alert("Category is required");
+      toast.error("Category is required");
       return;
     }
 
     if (!form.total_quantity) {
-      alert("Quantity is required");
+      toast.error("Quantity is required");
       return;
     }
 
     if (
       Number(form.total_quantity) <= 0
     ) {
-      alert(
+      toast.error(
         "Quantity must be greater than 0"
       );
       return;
@@ -342,7 +354,7 @@ const ManagerPage = () => {
       fetchTools();
     } catch (err) {
       console.error(err);
-      alert(err.response?.data || "Error approving requests");
+      toast.error(err.response?.data || "Error approving requests");
     }
   };
 
@@ -355,7 +367,7 @@ const ManagerPage = () => {
       fetchRequests();
     } catch (err) {
       console.error(err);
-      alert(err.response?.data || "Error rejecting requests");
+      toast.error(err.response?.data || "Error rejecting requests");
     }
   };
 
@@ -366,7 +378,7 @@ const ManagerPage = () => {
       fetchRequests();
     } catch (err) {
       console.error(err);
-      alert(err.response?.data || "Error merging requests");
+      toast.error(err.response?.data || "Error merging requests");
     }
   };
 
@@ -525,7 +537,7 @@ const ManagerPage = () => {
   const handleExportExcel = async () => {
     try {
       if (groupedRequests.length === 0) {
-        alert("No approved requests to export.");
+        toast.error("No approved requests to export.");
         return;
       }
 
@@ -587,10 +599,28 @@ const ManagerPage = () => {
       saveAs(data, fileName);
 
       console.log("Download triggered for:", fileName);
-      alert("Excel file generated successfully!");
+      toast.error("Excel file generated successfully!");
     } catch (err) {
       console.error("Export failed:", err);
-      alert("Failed to export Excel: " + err.message);
+      toast.error("Failed to export Excel: " + err.message);
+    }
+  };
+
+  const handleAddUser = async (e) => {
+    e.preventDefault();
+    setUserMsg({ type: "", text: "" });
+    try {
+      const res = await API.post("/auth/register", userForm);
+      const data = res.data;
+      if (res.status === 201) {
+        setUserMsg({ type: "success", text: "User added successfully!" });
+        setUserForm({ name: "", email: "", password: "", role: "employee", phone: "", designation: "" });
+        setSuccessNotification("User added successfully!");
+      } else {
+        setUserMsg({ type: "error", text: data.message || data.error || "Failed to add user" });
+      }
+    } catch (err) {
+      setUserMsg({ type: "error", text: "Failed to connect to server" });
     }
   };
 
@@ -838,6 +868,15 @@ const ManagerPage = () => {
             >
               <h4 style={{ color: "var(--accent-primary)" }}>New Stock</h4>
               <div className="value">Upload</div>
+            </div>
+
+            <div
+              className="stat-card"
+              onClick={() => setView("manageUsers")}
+              style={{ cursor: "pointer", borderColor: "rgba(16, 185, 129, 0.3)" }}
+            >
+              <h4 style={{ color: "var(--success)" }}>Manage Users</h4>
+              <div className="value">+ Add User</div>
             </div>
           </div>
 
@@ -1408,6 +1447,55 @@ const ManagerPage = () => {
       )}
 
       {/* 🔥 NEW STOCK INWARD (OCR) VIEW */}
+      {view === "manageUsers" && (
+        <div className="glass-panel" style={{ maxWidth: "600px", margin: "0 auto" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
+            <h2 style={{ margin: 0 }}>Add New Employee</h2>
+            <button onClick={() => setView("dashboard")} className="btn-secondary">Back to Dashboard</button>
+          </div>
+          
+          {userMsg.text && (
+            <div style={{ padding: "12px", marginBottom: "16px", borderRadius: "8px", background: userMsg.type === "success" ? "rgba(16, 185, 129, 0.1)" : "rgba(239, 68, 68, 0.1)", color: userMsg.type === "success" ? "var(--success)" : "var(--danger)", border: `1px solid ${userMsg.type === "success" ? "var(--success)" : "var(--danger)"}` }}>
+              {userMsg.text}
+            </div>
+          )}
+
+          <form onSubmit={handleAddUser} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            <div>
+              <label style={{ display: "block", marginBottom: "8px", color: "var(--text-secondary)" }}>Name</label>
+              <input type="text" required value={userForm.name} onChange={e => setUserForm({...userForm, name: e.target.value})} placeholder="John Doe" style={{ width: "100%", marginBottom: 0 }} />
+            </div>
+            <div>
+              <label style={{ display: "block", marginBottom: "8px", color: "var(--text-secondary)" }}>Email</label>
+              <input type="email" required value={userForm.email} onChange={e => setUserForm({...userForm, email: e.target.value})} placeholder="employee@example.com" style={{ width: "100%", marginBottom: 0 }} />
+            </div>
+            <div>
+              <label style={{ display: "block", marginBottom: "8px", color: "var(--text-secondary)" }}>Password</label>
+              <input type="password" required value={userForm.password} onChange={e => setUserForm({...userForm, password: e.target.value})} placeholder="Temporary Password" style={{ width: "100%", marginBottom: 0 }} />
+            </div>
+            <div>
+              <label style={{ display: "block", marginBottom: "8px", color: "var(--text-secondary)" }}>Role</label>
+              <select value={userForm.role} onChange={e => setUserForm({...userForm, role: e.target.value})} style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid rgba(255, 255, 255, 0.1)", background: "var(--bg-secondary)", color: "var(--text-primary)", marginBottom: 0 }}>
+                <option value="employee">Employee</option>
+                <option value="manager">Manager / Admin</option>
+              </select>
+            </div>
+            <div>
+              <label style={{ display: "block", marginBottom: "8px", color: "var(--text-secondary)" }}>Designation</label>
+              <input type="text" value={userForm.designation} onChange={e => setUserForm({...userForm, designation: e.target.value})} placeholder="Software Engineer" style={{ width: "100%", marginBottom: 0 }} />
+            </div>
+            <div>
+              <label style={{ display: "block", marginBottom: "8px", color: "var(--text-secondary)" }}>Phone (optional)</label>
+              <input type="text" value={userForm.phone} onChange={e => setUserForm({...userForm, phone: e.target.value})} placeholder="9876543210" style={{ width: "100%", marginBottom: 0 }} />
+            </div>
+            
+            <button type="submit" className="btn-primary" style={{ marginTop: "16px", padding: "12px", width: "100%" }}>
+              Create User
+            </button>
+          </form>
+        </div>
+      )}
+
       {view === "newStock" && (
         <div className="glass-panel" style={{ marginTop: "20px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>

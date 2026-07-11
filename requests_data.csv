@@ -1,0 +1,8 @@
+id,user_id,tool_id,quantity,status,request_date,approval_date,dc_number,approved_quantity,is_printed,client_name,client_address,attention_person,phone,po_number,po_date,state,returnable,is_hidden,price,unit_price
+1,3,321,10,"approved","2026-07-06T01:11:06.818Z","2026-07-06T01:12:15.290Z","DC/2026-27/001",0,true,"Madhura","kle tech park ,bvb campus vidyanagar hubballi","Samarth H","9123456789","516","2026-06-14T18:30:00.000Z","Karnataka",true,false,"0.00","0.00"
+3,3,282,1,"approved","2026-07-06T01:27:05.027Z","2026-07-06T01:27:35.195Z","DC/2026-27/002",0,true,"Madhura","kle tech park ,bvb campus vidyanagar hubballi","Samarth H","9123456789","3221","2026-07-24T18:30:00.000Z","Karnataka",true,false,"10.00","10.00"
+2,3,198,1,"approved","2026-07-06T01:11:39.460Z","2026-07-06T01:12:14.449Z","IN/2026-27/01",0,true,"Samarth H","Internal Department","Samarth H","","",null,"",false,false,"5.00","5.00"
+5,3,321,5,"approved","2026-07-10T01:06:22.324Z","2026-07-10T01:07:09.650Z","DC/2026-27/003",0,false,"Samarth H","Internal Department","Samarth H","","",null,"",false,false,"65.00","13.00"
+4,3,4,7,"approved","2026-07-10T01:05:05.926Z","2026-07-10T01:07:09.686Z","DC/2026-27/003",0,false,"Samarth H","Internal Department","Samarth H","9916190159","12345","2026-07-24T18:30:00.000Z","Haryana",true,false,"1400.00","200.00"
+7,3,321,1,"approved","2026-07-10T23:39:04.349Z","2026-07-10T23:41:36.603Z","IN/2026-27/03",0,false,"Samarth H","Internal Department","Samarth H","","",null,"",false,false,"100.00","100.00"
+6,3,146,2,"approved","2026-07-10T23:38:22.276Z","2026-07-10T23:41:44.002Z","DC/2026-27/004",0,false,"Ajay","Vidyanagar hubballi","Ajay","986426892","1234","2026-07-13T18:30:00.000Z","Karnataka",true,false,"240.00","120.00"
